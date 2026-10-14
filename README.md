@@ -1,135 +1,214 @@
 # SpendWise — Personal Finance Manager
 
-A full-stack personal finance management app: JWT authentication, income/expense
-tracking, interactive analytics dashboards (charts), and budget monitoring.
-
-**Stack:** React + Vite + Tailwind + Recharts (frontend) · Node.js + Express + MongoDB + JWT (backend)
-
-```
-spendwise/
-├── server/     # Express + MongoDB REST API
-└── client/     # React (Vite) frontend
-```
+SpendWise is a full-stack personal finance management application that helps users track income and expenses, monitor monthly budgets, and understand their spending habits through interactive analytics dashboards.
 
 ## Features
 
-- Secure JWT-based authentication (register/login, password hashing with bcrypt)
-- Income & expense tracking with full CRUD and history
-- Interactive analytics dashboard: income vs expense trend, spending by category
-  (pie chart), monthly comparison (bar chart), summary cards
-- Budget monitoring per category per month, with progress bars and over-budget alerts
-- RESTful API with MongoDB (Mongoose) persistence
-- Responsive UI (mobile-friendly nav, Tailwind CSS)
+- **User Authentication:** Register and log in securely using JWT authentication and bcrypt password hashing.
+- **Transaction Management:** Add, view, update, and delete income and expense transactions.
+- **Interactive Analytics:** Visualize income and expenses over time, spending by category, and monthly comparisons using charts.
+- **Budget Monitoring:** Create monthly category budgets, track spending progress, and identify over-budget categories.
+- **REST API:** Communicate between the frontend and backend through RESTful API endpoints.
+- **Database Persistence:** Store user, transaction, and budget data in MongoDB using Mongoose.
+- **Responsive UI:** Use the application on desktop and mobile screens.
 
-## 1. Prerequisites
+## Technology Stack
 
-- Node.js 18+ and npm
-- A MongoDB database — either:
-  - [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register) (free tier, cloud-hosted), or
-  - a local MongoDB instance (`mongodb://localhost:27017/spendwise`)
+| Layer          | Technologies                        |
+| -------------- | ----------------------------------- |
+| Frontend       | React, Vite, Tailwind CSS, Recharts |
+| Backend        | Node.js, Express.js                 |
+| Database       | MongoDB, Mongoose                   |
+| Authentication | JSON Web Tokens (JWT), bcryptjs     |
+| API            | REST                                |
 
-## 2. Run locally
+## Project Structure
 
-### Backend
+```text
+SpendWise/
+├── client/              # React + Vite frontend
+│   ├── src/
+│   ├── package.json
+│   └── .env.example
+├── server/              # Express backend
+│   ├── routes/
+│   ├── controllers/
+│   ├── models/
+│   ├── package.json
+│   └── .env.example
+├── .gitignore
+└── README.md
+```
+
+## Prerequisites
+
+- Node.js and npm
+- MongoDB installed locally or a MongoDB Atlas account
+- Git (optional, for cloning and pushing changes)
+
+## Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Akhila-5064/SpendWise.git
+cd SpendWise
+```
+
+### 2. Configure the backend
+
+Open a terminal in the project root:
 
 ```bash
 cd server
 npm install
+```
+
+Create the environment file by copying `.env.example`.
+
+**Windows PowerShell:**
+
+```powershell
+Copy-Item .env.example .env
+```
+
+**macOS, Linux, or Git Bash:**
+
+```bash
 cp .env.example .env
-# edit .env: set MONGO_URI and JWT_SECRET
+```
+
+Update `server/.env` with your configuration:
+
+```env
+PORT=5001
+MONGO_URI=mongodb://localhost:27017/spendwise
+JWT_SECRET=replace_with_a_long_random_secret
+JWT_EXPIRES_IN=7d
+CLIENT_URL=http://localhost:5173
+```
+
+Use your actual MongoDB Atlas connection string if you are using Atlas instead of a local MongoDB instance.
+
+Start the backend:
+
+```bash
 npm run dev
 ```
 
-The API runs at `http://localhost:5000`.
+The backend is expected to run at `http://localhost:5001`, based on the current configuration.
 
-### Frontend
+### 3. Configure the frontend
 
-In a separate terminal:
+Open a **second terminal** in the project root:
 
 ```bash
 cd client
 npm install
+```
+
+Create the frontend environment file.
+
+**Windows PowerShell:**
+
+```powershell
+Copy-Item .env.example .env
+```
+
+**macOS, Linux, or Git Bash:**
+
+```bash
 cp .env.example .env
-# VITE_API_URL should point at your backend, e.g. http://localhost:5000/api
+```
+
+Set the API URL in `client/.env`:
+
+```env
+VITE_API_URL=http://localhost:5001/api
+```
+
+Start the frontend:
+
+```bash
 npm run dev
 ```
 
-The app runs at `http://localhost:5173`. Register a new account, then start
-adding transactions and budgets.
+Open `http://localhost:5173` in your browser.
 
-## 3. Environment variables
+Register an account and start managing your transactions and budgets.
 
-**server/.env**
+## Environment Variables
 
-| Variable | Description |
-|---|---|
-| `PORT` | Port the API listens on (default 5000) |
-| `MONGO_URI` | MongoDB connection string |
-| `JWT_SECRET` | Long random string used to sign JWTs |
-| `JWT_EXPIRES_IN` | Token lifetime, e.g. `7d` |
-| `CLIENT_URL` | Frontend origin, used for CORS |
+### Backend — `server/.env`
 
-**client/.env**
+| Variable         | Description                                         |
+| ---------------- | --------------------------------------------------- |
+| `PORT`           | Backend server port; currently configured as `5001` |
+| `MONGO_URI`      | MongoDB connection string                           |
+| `JWT_SECRET`     | Secret used to sign and verify JWTs                 |
+| `JWT_EXPIRES_IN` | JWT lifetime, for example `7d`                      |
+| `CLIENT_URL`     | Frontend origin used for CORS                       |
 
-| Variable | Description |
-|---|---|
-| `VITE_API_URL` | Base URL of the backend API, e.g. `http://localhost:5000/api` |
+### Frontend — `client/.env`
 
-## 4. API overview
+| Variable       | Description                                   |
+| -------------- | --------------------------------------------- |
+| `VITE_API_URL` | Base URL of the backend API, including `/api` |
 
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/auth/register` | Create an account |
-| POST | `/api/auth/login` | Log in, returns JWT |
-| GET | `/api/auth/me` | Get current user (auth required) |
-| GET/POST | `/api/transactions` | List / create transactions |
-| PUT/DELETE | `/api/transactions/:id` | Update / delete a transaction |
-| GET/POST | `/api/budgets` | List / create budgets |
-| PUT/DELETE | `/api/budgets/:id` | Update / delete a budget |
-| GET | `/api/analytics/summary` | Monthly income/expense/balance summary |
-| GET | `/api/analytics/by-category` | Spending breakdown by category |
-| GET | `/api/analytics/trend` | Income/expense trend over N months |
-| GET | `/api/analytics/budget-status` | Budget vs actual spend per category |
+**Security:** Never commit actual `.env` files, database credentials, or JWT secrets. Use strong secrets and configure production environment variables through your hosting provider.
 
-All routes except register/login require an `Authorization: Bearer <token>` header.
+## API Documentation
 
-## 5. Deploying to GitHub
+All routes require an `Authorization: Bearer <token>` header, except the registration and login endpoints and any explicitly public routes.
 
-### Push the code to a new GitHub repository
+### Authentication
 
-```bash
-cd spendwise
-git init
-git add .
-git commit -m "Initial commit: SpendWise full-stack app"
-git branch -M main
-git remote add origin https://github.com/<your-username>/spendwise.git
-git push -u origin main
-```
+| Method | Endpoint             | Description                                   |
+| ------ | -------------------- | --------------------------------------------- |
+| POST   | `/api/auth/register` | Register a new account                        |
+| POST   | `/api/auth/login`    | Log in and receive a JWT                      |
+| GET    | `/api/auth/me`       | Retrieve the authenticated user's information |
 
-(Create the empty repo first at https://github.com/new — don't initialize it
-with a README so there's no merge conflict, or use `git pull --rebase origin main`
-if you did.)
+### Transactions
 
-Your `.env` files are already git-ignored, so secrets won't be committed —
-double check with `git status` before your first commit.
+| Method | Endpoint                | Description                     |
+| ------ | ----------------------- | ------------------------------- |
+| GET    | `/api/transactions`     | Retrieve transactions           |
+| GET    | `/api/transactions/:id` | Retrieve a specific transaction |
+| POST   | `/api/transactions`     | Create a transaction            |
+| PUT    | `/api/transactions/:id` | Update a transaction            |
+| DELETE | `/api/transactions/:id` | Delete a transaction            |
 
-### 6. Deploying the live app (optional, beyond just GitHub)
+### Budgets
 
-Hosting on GitHub itself only stores the code — GitHub Pages can't run the
-Node backend or connect to MongoDB. To have a live, working app:
+| Method | Endpoint           | Description      |
+| ------ | ------------------ | ---------------- |
+| GET    | `/api/budgets`     | Retrieve budgets |
+| POST   | `/api/budgets`     | Create a budget  |
+| PUT    | `/api/budgets/:id` | Update a budget  |
+| DELETE | `/api/budgets/:id` | Delete a budget  |
 
-1. **Database:** Create a free cluster on MongoDB Atlas, add a database user,
-   whitelist `0.0.0.0/0` (or your host's IPs), and copy the connection string
-   into `MONGO_URI`.
-2. **Backend:** Deploy the `server/` folder to a Node host such as Render,
-   Railway, or Fly.io. Set the environment variables from `server/.env` in
-   that platform's dashboard. Note the deployed API URL.
-3. **Frontend:** Deploy the `client/` folder to Vercel, Netlify, or GitHub
-   Pages (Pages needs `vite build` output in a `gh-pages` branch or use the
-   `gh-pages` npm package). Set `VITE_API_URL` to your deployed backend URL.
-4. **CORS:** Update `CLIENT_URL` in the backend's environment to your deployed
-   frontend URL so the browser isn't blocked by CORS.
+### Analytics
 
-Ask if you'd like step-by-step instructions for any specific host (Render,
-Vercel, Railway, etc.) — the exact steps vary slightly by provider.
+| Method | Endpoint                       | Description                                    |
+| ------ | ------------------------------ | ---------------------------------------------- |
+| GET    | `/api/analytics/summary`       | Retrieve monthly income, expenses, and balance |
+| GET    | `/api/analytics/by-category`   | Retrieve spending breakdown by category        |
+| GET    | `/api/analytics/trend`         | Retrieve income and expense trends             |
+| GET    | `/api/analytics/budget-status` | Compare budgets with actual spending           |
+
+*Note: This API table documents the intended endpoints. Confirm each path and method against the implementation before relying on it as a complete API reference.*
+
+## Deployment
+
+The application can be deployed by hosting its frontend, backend, and database separately.
+
+1. **Database:** Configure a MongoDB Atlas cluster and set the production `MONGO_URI`.
+2. **Backend:** Deploy the `server/` application to a Node.js hosting provider such as Render or Railway. Configure the required environment variables.
+3. **Frontend:** Deploy the `client/` application to a frontend hosting provider such as Vercel or Netlify. Set `VITE_API_URL` to the deployed backend API URL.
+4. **CORS:** Configure `CLIENT_URL` to match the deployed frontend origin.
+
+For production, use HTTPS, strong secrets, appropriate database access restrictions, and production-ready CORS settings. Test authentication and the main application features after deployment.
+
+Deployment requires additional configuration; these instructions do not imply that a live instance is currently available.
+
